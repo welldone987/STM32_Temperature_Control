@@ -247,7 +247,7 @@
               <IROM>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0xFC00</Size>
+                <Size>0x10000</Size>
               </IROM>
               <XRAM>
                 <Type>0</Type>
@@ -272,7 +272,7 @@
               <OCR_RVCT4>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0xFC00</Size>
+                <Size>0x10000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -389,36 +389,6 @@
         <Group>
           <GroupName>Application/User/Core</GroupName>
           <Files>
-            <File>
-              <FileName>app.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\Src\app.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_button.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\Src\app_button.c</FilePath>
-            </File>
-            <File>
-              <FileName>thermostat.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\Src\thermostat.c</FilePath>
-            </File>
-            <File>
-              <FileName>app.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Core\Inc\app.h</FilePath>
-            </File>
-            <File>
-              <FileName>app_button.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Core\Inc\app_button.h</FilePath>
-            </File>
-            <File>
-              <FileName>thermostat.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Core\Inc\thermostat.h</FilePath>
-            </File>
             <File>
               <FileName>bsp_eeprom.c</FileName>
               <FileType>1</FileType>
@@ -611,9 +581,9 @@
               </FileOption>
             </File>
             <File>
-              <FileName>i2c.c</FileName>
+              <FileName>dma.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../Core/Src/i2c.c</FilePath>
+              <FilePath>../Core/Src/dma.c</FilePath>
               <FileOption>
                 <CommonProperty>
                   <UseCPPCompiler>2</UseCPPCompiler>
@@ -847,11 +817,6 @@
               <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f1xx_hal_i2c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_i2c.c</FilePath>
-            </File>
-            <File>
               <FileName>stm32f1xx_hal_tim.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c</FilePath>
@@ -952,3 +917,4 @@
     <files />
   </RTE>
 </Project>
+

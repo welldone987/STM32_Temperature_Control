@@ -1,0 +1,50 @@
+# ---- 构建输出 ----
+build/
+build_*/
+*.elf
+*.hex
+*.bin
+*.map
+*.o
+*.obj
+*.a
+
+# ---- CMake 生成物 ----
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+compile_commands.json
+
+# ---- 测试 / 调试残留 ----
+*.log
+
+# ---- CMSIS 冗余组件 ----
+# CubeMX 会把整个 CMSIS 包拷进来，但 GCC 构建只用 CMSIS/Include 与
+# CMSIS/Device，其余（DSP/NN 库、Keil 二进制库、文档、其它内核模板）
+# 全部排除，避免仓库膨胀约 54MB。文件仍保留在磁盘上，不影响本地构建。
+Drivers/CMSIS/Core/
+Drivers/CMSIS/Core_A/
+Drivers/CMSIS/DSP/
+Drivers/CMSIS/Lib/
+Drivers/CMSIS/NN/
+Drivers/CMSIS/RTOS/
+Drivers/CMSIS/RTOS2/
+Drivers/CMSIS/docs/
+
+# ---- Keil MDK 构建输出与每用户 GUI 布局（保留工程文件） ----
+MDK-ARM/stairwayB/
+MDK-ARM/*.uvguix.*
+MDK-ARM/*.lst
+
+# ---- CubeMX / 编辑器 / 本地配置 ----
+.mxproject
+.clangd
+mx.scratch
+*.ioc.bak*
+*.bak
+
+# IDE（含本机绝对路径，默认不提交；如需共享请先去掉本地路径）
+.vscode/
+.idea/
+.settings/
