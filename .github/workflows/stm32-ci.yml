@@ -1,0 +1,40 @@
+name: STM32CubeCLT CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build ${{ matrix.preset }}
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: [Debug, MinSizeRel]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Build with STM32CubeCLT
+        uses: uoohyo/action-stm32-cmake@v1.21.0
+        with:
+          project-path: src
+          cmake-args: --preset ${{ matrix.preset }}
+          build-target: all
+
+      - name: Upload firmware artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: stairwayB-${{ matrix.preset }}
+          path: |
+            src/build/${{ matrix.preset }}/stairwayB.elf
+            src/build/${{ matrix.preset }}/stairwayB.map
+          if-no-files-found: error

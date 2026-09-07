@@ -2,18 +2,62 @@
 
 # STM32 智能温度控制系统
 
-基于 **STM32F103C8T6** 的裸机智能温控项目，使用 NTC 采集环境温度，通过 OLED 显示、按键设置阈值，并使用 TB6612 + PWM 根据温度自动调节风扇转速。工程采用 STM32CubeMX/HAL + Keil MDK 开发，同时包含嘉立创 EDA 硬件工程。
+[![STM32CubeCLT CI](https://github.com/welldone987/STM32_Temperature_Control/actions/workflows/stm32-ci.yml/badge.svg)](https://github.com/welldone987/STM32_Temperature_Control/actions/workflows/stm32-ci.yml)
 
-## 功能
+基于 **STM32F103C8T6** 的智能温控项目。系统使用 NTC 采集环境温度，通过 OLED 显示、按键设置阈值，并使用 TB6612 + PWM 自动调节风扇转速。
 
-- 10 kΩ NTC + ADC 温度采集，使用 Steinhart-Hart 方程换算温度
-- 5 点中值滤波 + 30 点移动平均，并支持分段线性标定
+当前软件已重构为 **STM32CubeMX / HAL + FreeRTOS + C++17 应用层**，使用 **STM32CubeCLT（GNU Arm Toolchain + CMake + Ninja）** 构建。
+
+## 主要功能
+
+- ADC1 + DMA 循环采样 NTC，温度链为：50 点 DMA 均值 → 中值滤波 → 滑动平均 → Steinhart-Hart → 分段线性标定
 - OLED 显示实时温度、上下限、风扇状态与传感器故障
-- 按键设置高/低温报警阈值，参数延迟写入 Flash 并通过 CRC16 校验
+- 按键设置高/低温报警阈值，参数通过 CRC16 校验后写入片内 Flash
 - TB6612 驱动风扇，25–50 ℃ 区间内由 10% 至 100% 线性调速
 - 温度越界时通过 LED + 蜂鸣器报警；NTC 异常时停止自动风扇
-- USART1 每秒输出 ADC、温度、NTC 电阻、风扇占空比和故障码
-- 使用 `HAL_GetTick()` 实现协作式周期调度，避免主循环长时间阻塞
+- USART1 输出运行遥测信息，便于调试温度链和控制状态
+- FreeRTOS 全静态创建任务和队列，不依赖动态内存；C++ 层关闭异常、RTTI 和线程安全静态初始化
+
+## 软件结构
+
+```text
+src/
+├─ App/                    C++17 应用层
+│  ├─ common/              公共类型与配置
+│  ├─ control/             风扇与温控执行逻辑
+│  ├─ sensor/              NTC 采样、滤波、温度换算与故障检测
+│  ├─ display/             OLED 与软件 I²C
+│  ├─ storage/             Flash 参数持久化
+│  ├─ rtos/                FreeRTOS 任务、队列与 ISR glue
+│  └─ config/              FreeRTOSConfig
+├─ Core/                   STM32CubeMX 生成的初始化与 HAL glue
+├─ Drivers/                STM32F1 HAL / CMSIS
+├─ FreeRTOS/               FreeRTOS Kernel
+├─ cmake/                  STM32CubeMX 与 GNU Arm CMake 配置
+├─ CMakeLists.txt
+├─ CMakePresets.json
+├─ stairwayB.ioc
+├─ STM32F103XX_FLASH.ld
+└─ startup_stm32f103xb.s
+```
+
+应用由 CubeMX 生成的 `main.c` 通过 C 接口进入 C++ 层：
+
+```text
+main.c
+  ├─ app_init()
+  │    ├─ 读取持久化阈值
+  │    ├─ 启动 ADC DMA
+  │    └─ 初始化执行器
+  └─ app_start()
+       └─ FreeRTOS Scheduler
+            ├─ control   10 ms   按键 / 报警 / 风扇控制
+            ├─ sensor   100 ms   温度采样与滤波
+            ├─ display  500 ms   OLED 增量刷新
+            └─ storage  event    Flash 后台写入
+```
+
+任务间主要使用长度为 1 的覆写队列和任务通知传递最新状态，避免不必要的互斥与堆分配。
 
 ## 硬件
 
@@ -26,42 +70,27 @@
 
 ![硬件原理图](Hardware/原理图.png)
 
-## 软件结构
-
-```text
-main.c
-  └─ app.c                  应用状态机与周期调度
-      ├─ app_button.c       按键防抖与事件处理
-      ├─ thermostat.c       温控与风扇控制策略
-      ├─ bsp_ntc.c          ADC、温度换算、滤波与故障检测
-      ├─ bsp_motor.c        TB6612 与 PWM 控制
-      ├─ bsp_eeprom.c       Flash 参数持久化
-      └─ OLED / USART       显示与运行遥测
-             ↓
-       STM32F1 HAL / CMSIS
-```
-
-主要任务周期为：按键扫描 5 ms、温控 50 ms、NTC 采样 100 ms、OLED 刷新 500 ms、USART 遥测 1 s。
-
-## 目录
-
-```text
-.
-├─ Hardware/               嘉立创 EDA 工程与原理图
-├─ src/
-│  ├─ stairwayB.ioc        STM32CubeMX 配置
-│  ├─ Core/Inc             应用与 BSP 头文件
-│  ├─ Core/Src             应用、驱动与生成代码
-│  ├─ Drivers              STM32F1 HAL / CMSIS
-│  └─ MDK-ARM              Keil 工程
-├─ README.md
-└─ README_EN.md
-```
-
 ## 构建
 
-1. 使用 Keil MDK-ARM 5 打开 `src/MDK-ARM/stairwayB.uvprojx`
-2. 选择 `stairwayB` Target 并 Rebuild
-3. 使用 ST-Link 烧录生成的程序
+安装 STM32CubeCLT，并确保其中的 `arm-none-eabi-gcc`、CMake 和 Ninja 已加入环境变量。
 
-如需修改 GPIO、ADC、TIM 或 USART 配置，优先修改 `src/stairwayB.ioc` 后通过 STM32CubeMX 重新生成代码。
+```bash
+cd src
+cmake --preset Debug
+cmake --build --preset Debug
+```
+
+体积优化构建：
+
+```bash
+cmake --preset MinSizeRel
+cmake --build --preset MinSizeRel
+```
+
+生成的 ELF 与 map 文件位于 `src/build/<Preset>/`。
+
+如需修改 GPIO、ADC、DMA、TIM 或 USART 配置，优先修改 `src/stairwayB.ioc` 并通过 STM32CubeMX 重新生成；业务逻辑集中在 `src/App/`，与 CubeMX 生成层分离。
+
+## CI
+
+GitHub Actions 在 push / pull request 时使用 STM32CubeCLT 环境分别构建 `Debug` 与 `MinSizeRel`，并上传 ELF 和 map 文件作为构建产物。
