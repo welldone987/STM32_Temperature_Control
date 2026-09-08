@@ -2,7 +2,11 @@
 
 # STM32 Intelligent Temperature Control System
 
-[![STM32CubeCLT CI](https://github.com/welldone987/STM32_Temperature_Control/actions/workflows/stm32-ci.yml/badge.svg)](https://github.com/welldone987/STM32_Temperature_Control/actions/workflows/stm32-ci.yml)
+![STM32F103](https://img.shields.io/badge/-STM32F103-03234B?logo=stmicroelectronics&logoColor=white)
+![STM32 HAL](https://img.shields.io/badge/-STM32%20HAL-03234B?logo=stmicroelectronics&logoColor=white)
+![CubeCLT](https://img.shields.io/badge/-CubeCLT-03234B?logo=stmicroelectronics&logoColor=white)
+![C](https://img.shields.io/badge/-C-A8B9CC?logo=c&logoColor=black)
+[![Build](https://img.shields.io/github/actions/workflow/status/welldone987/STM32_Temperature_Control/stm32-ci.yml?branch=main&label=Build)](https://github.com/welldone987/STM32_Temperature_Control/actions/workflows/stm32-ci.yml)
 
 An intelligent temperature-control system based on the **STM32F103C8T6**. It measures ambient temperature with an NTC thermistor, displays system status on an OLED, supports threshold adjustment through buttons, and drives a fan through TB6612 + PWM.
 
