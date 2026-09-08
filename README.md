@@ -2,7 +2,11 @@
 
 # STM32 智能温度控制系统
 
-[![STM32CubeCLT CI](https://github.com/welldone987/STM32_Temperature_Control/actions/workflows/stm32-ci.yml/badge.svg)](https://github.com/welldone987/STM32_Temperature_Control/actions/workflows/stm32-ci.yml)
+![STM32F103](https://img.shields.io/badge/-STM32F103-03234B?logo=stmicroelectronics&logoColor=white)
+![STM32 HAL](https://img.shields.io/badge/-STM32%20HAL-03234B?logo=stmicroelectronics&logoColor=white)
+![CubeCLT](https://img.shields.io/badge/-CubeCLT-03234B?logo=stmicroelectronics&logoColor=white)
+![C](https://img.shields.io/badge/-C-A8B9CC?logo=c&logoColor=black)
+[![Build](https://img.shields.io/github/actions/workflow/status/welldone987/STM32_Temperature_Control/stm32-ci.yml?branch=main&label=Build)](https://github.com/welldone987/STM32_Temperature_Control/actions/workflows/stm32-ci.yml)
 
 基于 **STM32F103C8T6** 的智能温控项目。系统使用 NTC 采集环境温度，通过 OLED 显示、按键设置阈值，并使用 TB6612 + PWM 自动调节风扇转速。
 
